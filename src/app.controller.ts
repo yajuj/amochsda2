@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Query, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  ForbiddenException,
+  Get,
+  Post,
+  Query,
+  Req,
+} from '@nestjs/common';
 import { Request } from 'express';
 import { AppService } from './app.service';
 import { Dto } from './dto/dto';
@@ -13,6 +21,7 @@ export class AppController {
 
   @Get()
   async get(@Req() req: Request, @Query('code') code: string) {
+    console.log(req.headers);
     this.host = req.headers?.host;
 
     try {
@@ -26,46 +35,51 @@ export class AppController {
 
   @Post()
   async post(@Body() dto: Dto) {
-    const valid = new Date().getMilliseconds() < this.token.expires_in;
+    if (!this.token.access_token) throw new ForbiddenException();
 
-    if (!valid) {
-      const { data: newToken } = await this.appService.refreshToken(
-        this.token.refresh_token,
-        this.host,
-      );
-      this.token = newToken;
-      console.log('token ver');
-    }
-    console.log('contactget');
-    const {
-      data: { _embedded },
-    } = await this.appService.getContact(
-      dto.email,
-      dto.phone,
-      this.token.access_token,
-    );
-    console.log('getcontact');
-    let contact = _embedded?.contacts[0];
+    try {
+      const valid = new Date().getMilliseconds() < this.token.expires_in;
 
-    if (contact) {
-      const { data } = await this.appService.updateContact(
-        dto,
-        contact.id,
+      if (!valid) {
+        const { data: newToken } = await this.appService.refreshToken(
+          this.token.refresh_token,
+          this.host,
+        );
+        this.token = newToken;
+      }
+
+      const {
+        data: { _embedded },
+      } = await this.appService.getContact(
+        dto.email,
+        dto.phone,
         this.token.access_token,
       );
-      contact = data;
-      console.log('update contact');
-    }
 
-    if (!contact) {
-      console.log('create contact');
-      const { data } = await this.appService.createContact(
-        dto,
-        this.token.access_token,
-      );
-      contact = data;
+      let contact = _embedded?.contacts[0];
+
+      if (contact) {
+        const { data } = await this.appService.updateContact(
+          dto,
+          contact.id,
+          this.token.access_token,
+        );
+        contact = data;
+      }
+
+      if (!contact) {
+        const { data } = await this.appService.createContact(
+          dto,
+          this.token.access_token,
+        );
+        contact = data;
+      }
+
+      await this.appService.createLead(dto, contact, this.token.access_token);
+    } catch (error) {
+      console.log(error.data);
+    } finally {
+      return;
     }
-    await this.appService.createLead(dto, contact, this.token.access_token);
-    return;
   }
 }

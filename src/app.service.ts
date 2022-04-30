@@ -96,7 +96,37 @@ export class AppService {
             name: 'test',
             price: 1231,
             contact_name: contact.name,
+            created_by: contact.id,
             company_name: 'test',
+            _embeded: {
+              contacts: [
+                {
+                  id: contact.id,
+                  name: contact.name,
+                  is_main: true,
+                  custom_fields_values: [
+                    {
+                      field_code: 'EMAIL',
+                      values: [
+                        {
+                          enum_code: 'WORK',
+                          value: dto.email,
+                        },
+                      ],
+                    },
+                    {
+                      field_code: 'PHONE',
+                      values: [
+                        {
+                          enum_code: 'WORK',
+                          value: dto.phone,
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
           },
         ],
         {
