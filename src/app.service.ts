@@ -16,7 +16,7 @@ export class AppService {
         client_secret: process.env.AMO_SECRET_KEY,
         grant_type: 'authorization_code',
         code,
-        redirect_uri: 'https://' + host,
+        redirect_uri: process.env.AMO_SUBDOMAIN,
       })
       .toPromise();
   }
