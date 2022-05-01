@@ -29,7 +29,6 @@ export class AppController {
       this.token = token;
     } catch (e: any) {
       console.log(e);
-      this.token = {} as Token;
     }
   }
 
