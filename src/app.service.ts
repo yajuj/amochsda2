@@ -16,7 +16,7 @@ export class AppService {
         client_secret: process.env.AMO_SECRET_KEY,
         grant_type: 'authorization_code',
         code,
-        redirect_uri: process.env.AMO_SUBDOMAIN,
+        redirect_uri: 'https://' + host,
       })
       .toPromise();
   }
@@ -28,7 +28,7 @@ export class AppService {
         client_secret: process.env.AMO_SECRET_KEY,
         grant_type: 'refresh_token',
         refresh_token: token,
-        redirect_uri: process.env.AMO_SUBDOMAIN,
+        redirect_uri: 'https://' + host,
       })
       .toPromise();
   }
