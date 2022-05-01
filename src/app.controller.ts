@@ -33,7 +33,7 @@ export class AppController {
 
   @Post()
   async post(@Body() dto: Dto) {
-    if (!this.token.access_token) throw new ForbiddenException();
+    if (!this?.token.access_token) throw new ForbiddenException();
 
     try {
       const valid = new Date().getMilliseconds() < this.token.expires_in;
