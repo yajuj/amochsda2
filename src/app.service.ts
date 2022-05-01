@@ -28,7 +28,7 @@ export class AppService {
         client_secret: process.env.AMO_SECRET_KEY,
         grant_type: 'refresh_token',
         refresh_token: token,
-        redirect_uri: process.env.AMO_SUBDOMAIN,
+        redirect_uri: process.env.REDIRECT_URI,
       })
       .toPromise();
   }
