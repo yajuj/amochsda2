@@ -28,7 +28,7 @@ export class AppService {
         client_secret: process.env.AMO_SECRET_KEY,
         grant_type: 'refresh_token',
         refresh_token: token,
-        redirect_uri: 'https://' + host,
+        redirect_uri: 'https://' + host + '/',
       })
       .toPromise();
   }
@@ -88,6 +88,43 @@ export class AppService {
   }
 
   async createLead(dto: Dto, contact: Contact, acToken: string) {
+    console.log(
+      JSON.stringify([
+        {
+          name: 'test',
+          price: 1231,
+          company_name: 'test',
+          _embeded: {
+            contacts: [
+              {
+                id: contact.id,
+                name: contact.name,
+                custom_fields_values: [
+                  {
+                    field_code: 'EMAIL',
+                    values: [
+                      {
+                        enum_code: 'WORK',
+                        value: dto.email,
+                      },
+                    ],
+                  },
+                  {
+                    field_code: 'PHONE',
+                    values: [
+                      {
+                        enum_code: 'WORK',
+                        value: dto.phone,
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      ]),
+    );
     return this.httpService
       .post(
         `/api/v4/leads`,
@@ -95,15 +132,12 @@ export class AppService {
           {
             name: 'test',
             price: 1231,
-            contact_name: contact.name,
-            created_by: contact.id,
             company_name: 'test',
             _embeded: {
               contacts: [
                 {
                   id: contact.id,
                   name: contact.name,
-                  is_main: true,
                   custom_fields_values: [
                     {
                       field_code: 'EMAIL',
