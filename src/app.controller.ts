@@ -21,7 +21,6 @@ export class AppController {
 
   @Get()
   async get(@Req() req: Request, @Query('code') code: string) {
-    console.log(req.headers);
     this.host = req.headers?.host;
 
     try {
