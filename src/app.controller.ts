@@ -15,7 +15,7 @@ import { Token } from './dto/token.dto';
 @Controller()
 export class AppController {
   code: string;
-  token: Token;
+  token: Token | null = null;
   host: string;
   constructor(private readonly appService: AppService) {}
 
@@ -33,7 +33,7 @@ export class AppController {
 
   @Post()
   async post(@Body() dto: Dto) {
-    if (!this?.token.access_token) throw new ForbiddenException();
+    if (!this.token) throw new ForbiddenException();
 
     try {
       const valid = new Date().getMilliseconds() < this.token.expires_in;
